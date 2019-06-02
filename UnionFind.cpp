@@ -1,3 +1,8 @@
+#include<vector>
+#include<algorithm>
+#include<climits>
+#include<utility>
+
 class UnionFind{
     template<typename T>
     using vector = std::vector<T>;
