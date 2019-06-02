@@ -1,12 +1,10 @@
 #include<vector>
 #include<algorithm>
-#include<climits>
 #include<utility>
+#include<climits>
+using namespace std;
 
 class UnionFind{
-    template<typename T>
-    using vector = std::vector<T>;
-
     vector<int> par;
     vector<long long> wei;
     int groupCount;
@@ -68,7 +66,7 @@ public:
         }
 
         if(size(x) < size(y)){
-            std::swap(x, y);
+            swap(x, y);
             w = -w;
         }
 
