@@ -8,7 +8,10 @@ class ModInt{
     long long num;
 
     long long mod(long long n){
-        return (n % modulus + modulus) % modulus;
+        if(n < 0LL){
+            n += (abs(n + 1LL) / modulus + 1LL) * modulus;
+        }
+        return n % modulus;
     }
 
     long long ext_gcd(long long a, long long b, long long &x, long long &y){
