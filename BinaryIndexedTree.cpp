@@ -48,7 +48,7 @@ public:
     }
 
     bool update(int i, T x){
-        T _x = x - sum(i, i + 1);
+        T _x = x - sum(i - 1, i);
         return add(i, _x);
     }
 
@@ -111,5 +111,7 @@ int main(){
     BinaryIndexedTree<int> bit2(a);
     cout << bit2.sum(2, 4) << endl;
     cout << bit2.lower_bound(4) << " " << bit2.upper_bound(4) << endl;
+    bit2.update(1, 5);
+    cout << bit2.sum(4) << endl;
     return 0;
 }
