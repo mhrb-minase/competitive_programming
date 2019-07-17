@@ -87,3 +87,11 @@ public:
         return groupCount;
     }
 };
+
+/*
+
+verify:https://atcoder.jp/contests/abc120/submissions/6417856
+      :https://atcoder.jp/contests/abc126/submissions/6417867
+      :https://atcoder.jp/contests/abc087/submissions/6417899
+
+*/
