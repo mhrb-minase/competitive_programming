@@ -1,7 +1,6 @@
 #include<vector>
 #include<algorithm>
 #include<utility>
-#include<climits>
 using namespace std;
 
 class UnionFind{
@@ -10,6 +9,11 @@ class UnionFind{
     int groupCount;
 
 public:
+    UnionFind(int n = 0){
+        init(n);
+    }
+
+    // n要素で初期化
     void init(int n = 0){
         par.resize(n);
         fill(par.begin(), par.end(), -1);
@@ -22,10 +26,7 @@ public:
         return;
     }
 
-    UnionFind(int n = 0){
-        init(n);
-    }
-
+    // xが属する集合の根を求める
     int root(int x){
         if(par[x] < 0){
             return x;
@@ -35,26 +36,29 @@ public:
         return par[x] = r;
     }
 
+    // xとyが同じ集合に属するか調べる
     bool same(int x, int y){
         return root(x) == root(y);
     }
 
+    // xが属する集合の大きさを調べる
     int size(int x){
         return -par[root(x)];
     }
 
+    // xの根との重みの差を調べる
     long long weight(int x){
         root(x);
         return wei[x];
     }
 
+    // xとyの重みの差を調べる
     long long diff(int x, int y){
-        if(!same(x, y)){
-            return LLONG_MIN;
-        }
         return weight(y) - weight(x);
     }
 
+    // xが属する集合とyが属する集合を、xとyの重みの差がwになるように繋げる
+    // 既に繋がっていた場合はfalseを返す
     bool unite(int x, int y, long long w = 0){
         w += weight(x) - weight(y);
 
@@ -65,7 +69,7 @@ public:
             return false;
         }
 
-        if(size(x) < size(y)){
+        if(par[y] < par[x]){
             swap(x, y);
             w = -w;
         }
@@ -78,7 +82,8 @@ public:
         return true;
     }
 
-    int number_of_group(void){
+    // 集合の個数を調べる
+    int size(void){
         return groupCount;
     }
 };
