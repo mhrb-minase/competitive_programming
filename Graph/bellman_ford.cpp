@@ -16,7 +16,7 @@ bool bellman_ford(int v, const vector<edge>& es, vector<long long>& cost, int s 
         g = v - 1;
     }
 
-    const long long INF = 1LL << 61;
+    constexpr long long INF = 1LL << 61;
 
     cost.resize(v);
     fill(cost.begin(), cost.end(), INF);
@@ -41,6 +41,6 @@ bool bellman_ford(int v, const vector<edge>& es, vector<long long>& cost, int s 
 
 /*
 
-verify:https://atcoder.jp/contests/abc137/submissions/7028138
+verify:https://atcoder.jp/contests/abc137/submissions/7032507
 
 */
