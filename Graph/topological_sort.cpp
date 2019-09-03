@@ -3,6 +3,7 @@ using namespace std;
 
 bool topological_sort(const vector< vector<int> >& g, vector<int>& res){
     const int v = (int)g.size();
+    res.clear();
 
     vector<int> deg(v, 0);
     for(int i = 0 ; i < v ; ++i){
