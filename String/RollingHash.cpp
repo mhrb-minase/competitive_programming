@@ -36,9 +36,9 @@ public:
         n = (int)s.size();
 
         hash1.assign(n + 1, mint1(0));
-        hash2.resize(n + 1, mint2(0));
-        power1.resize(n + 1, mint1(1));
-        power2.resize(n + 1, mint2(1));
+        hash2.assign(n + 1, mint2(0));
+        power1.assign(n + 1, mint1(1));
+        power2.assign(n + 1, mint2(1));
         for(int i = 0 ; i < n ; ++i){
             hash1[i + 1] = hash1[i] * base1 + s[i];
             hash2[i + 1] = hash2[i] * base2 + s[i];
