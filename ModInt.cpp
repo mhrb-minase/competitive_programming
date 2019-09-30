@@ -141,5 +141,7 @@ std::ostream &operator<<(std::ostream &lhs, ModInt<modulus> rhs){
 verify:https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/NTL_1_B/judge/3897900/C++14
        https://atcoder.jp/contests/abc055/submissions/7793608
        https://atcoder.jp/contests/arc009/submissions/7722387
+       https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/ALDS1_14_B/judge/3898066/C++14
+       https://atcoder.jp/contests/abc141/submissions/7734650
 
 */
