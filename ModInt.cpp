@@ -1,15 +1,12 @@
 #include<iostream>
-#include<cmath>
-using namespace std;
 
-// 除算はmodulusと互いに素な数のみ対応
 template<long long modulus>
 class ModInt{
     long long num;
 
     long long mod(long long n){
         if(n < 0LL){
-            n += (abs(n + 1LL) / modulus + 1LL) * modulus;
+            n = (n % modulus) + modulus;
         }
         return n % modulus;
     }
@@ -35,12 +32,7 @@ class ModInt{
 
 public:
     ModInt(long long n = 0LL){
-        init(n);
-    }
-
-    void init(long long n = 0LL){
         num = mod(n);
-        return;
     }
 
     long long get(void){
@@ -56,10 +48,10 @@ public:
     }
 
     ModInt &operator-=(const ModInt &rhs){
-        num -= rhs.num;
-        if(num < 0LL){
+        if(num < rhs.num){
             num += modulus;
         }
+        num -= rhs.num;
         return *this;
     }
 
@@ -74,24 +66,54 @@ public:
         return *this;
     }
 
-    ModInt operator+(const ModInt &rhs) const {
-        return ModInt(*this) += rhs;
+    template<typename T>
+    ModInt &operator+=(const T &rhs){
+        return *this += ModInt(rhs);
     }
 
-    ModInt operator-(const ModInt &rhs) const {
-        return ModInt(*this) -= rhs;
+    template<typename T>
+    ModInt &operator-=(const T &rhs){
+        return *this -= ModInt(rhs);
     }
 
-    ModInt operator*(const ModInt &rhs) const {
-        return ModInt(*this) *= rhs;
+    template<typename T>
+    ModInt &operator*=(const T &rhs){
+        return *this *= ModInt(rhs);
     }
 
-    ModInt operator/(const ModInt &rhs) const {
-        return ModInt(*this) /= rhs;
+    template<typename T>
+    ModInt &operator/=(const T &rhs){
+        return *this /= ModInt(rhs);
+    }
+
+    template<typename T>
+    ModInt operator+(const T &rhs) const {
+        return ModInt(*this) += ModInt(rhs);
+    }
+
+    template<typename T>
+    ModInt operator-(const T &rhs) const {
+        return ModInt(*this) -= ModInt(rhs);
+    }
+
+    template<typename T>
+    ModInt operator*(const T &rhs) const {
+        return ModInt(*this) *= ModInt(rhs);
+    }
+
+    template<typename T>
+    ModInt operator/(const T &rhs) const {
+        return ModInt(*this) /= ModInt(rhs);
     }
 
     ModInt &operator=(const ModInt &rhs){
         num = rhs.num;
+        return *this;
+    }
+
+    template<typename T>
+    ModInt &operator=(const T &rhs){
+        num = mod(rhs);
         return *this;
     }
 
@@ -101,40 +123,23 @@ public:
 };
 
 template<long long modulus>
-ostream &operator<<(ostream &lhs, ModInt<modulus> &rhs){
-    lhs << rhs.get();
+std::istream &operator>>(std::istream &lhs, ModInt<modulus> &rhs){
+    long long val;
+    lhs >> val;
+    rhs = val;
     return lhs;
 }
 
 template<long long modulus>
-istream &operator>>(istream &lhs, ModInt<modulus> &rhs){
-    long long val;
-    lhs >> val;
-    rhs.init(val);
+std::ostream &operator<<(std::ostream &lhs, ModInt<modulus> rhs){
+    lhs << rhs.get();
     return lhs;
 }
 
-// 使用例
-// 標準入力から2つの整数を受け取り、様々な演算結果を mod 23 で出力
-int main(){
-    ModInt<23> a, b;
-    cin >> a >> b;
-    cout << a << " " << b << endl;
-    a = a + b;
-    cout << a << " " << b << endl;
-    a += b;
-    cout << a << " " << b << endl;
-    a = a - b;
-    cout << a << " " << b << endl;
-    a -= b;
-    cout << a << " " << b << endl;
-    a = a * b;
-    cout << a << " " << b << endl;
-    a *= b;
-    cout << a << " " << b << endl;
-    a = a / b;
-    cout << a << " " << b << endl;
-    a /= b;
-    cout << a << " " << b << endl;
-    return 0;
-}
+/*
+
+verify:https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/NTL_1_B/judge/3897900/C++14
+       https://atcoder.jp/contests/abc055/submissions/7793608
+       https://atcoder.jp/contests/arc009/submissions/7722387
+
+*/
