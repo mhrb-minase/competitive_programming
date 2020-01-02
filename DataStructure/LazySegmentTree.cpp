@@ -1,40 +1,38 @@
 #include<vector>
 #include<algorithm>
 #include<functional>
-using namespace std;
 
-template<typename T, typename U>
+template<typename T>
 class LazySegmentTree{
     int n;
+    std::vector<T> node;
+    std::vector<T> lazy;
+    std::vector<int> length;
     int height;
-    vector<T> node;
-    vector<U> lazy;
-    vector<int> len;
 
-    using F = function<T(T, T)>;
-    using G = function<T(T, U)>;
-    using H = function<U(U, U)>;
-    using S = function<U(U, int)>;
+    using F = std::function<T(T, T)>;
+    using S = std::function<T(T, int)>;
 
     F f;
-    G g;
-    H h;
+    F g;
+    F h;
     S s;
-    T en;
-    U el;
+    T id1;
+    T id2;
 
     void evaluate(int k){
-        if(lazy[k] == el){
+        if(lazy[k] == id2){
             return;
         }
+
+        node[k] = g(node[k], s(lazy[k], length[k]));
 
         if(k < n){
             lazy[k << 1] = h(lazy[k << 1], lazy[k]);
             lazy[(k << 1) | 1] = h(lazy[(k << 1) | 1], lazy[k]);
         }
 
-        node[k] = g(node[k], s(lazy[k], len[k]));
-        lazy[k] = el;
+        lazy[k] = id2;
 
         return;
     }
@@ -48,59 +46,50 @@ class LazySegmentTree{
         return;
     }
 
-    void update(int k){
-        evaluate(k << 1);
-        evaluate((k << 1) | 1);
-        node[k] = f(node[k << 1], node[(k << 1) | 1]);
-        return;
-    }
-
 public:
-    LazySegmentTree(int n_, F f_, G g_, H h_, S s_, T en_, U el_){
-        init(n_, f_, g_, h_, s_, en_, el_);
+    LazySegmentTree(int n_, F f_, F g_, F h_, T id1_, T id2_, S s_ = [](T x, int len){ return x; }){
+        init(n_, f_, g_, h_, id1_, id2_, s_);
     }
 
-    LazySegmentTree(const vector<T>& dat, F f_, G g_, H h_, S s_, T en_, U el_){
-        build(dat, f_, g_, h_, s_, en_, el_);
+    LazySegmentTree(std::vector<T>& dat, F f_, F g_, F h_, T id1_, T id2_, S s_ = [](T x, int len){ return x; }){
+        build(dat, f_, g_, h_, id1_, id2_, s_);
     }
 
-    void init(int n_, F f_, G g_, H h_, S s_, T en_, U el_){
+    void init(int n_, F f_, F g_, F h_, T id1_, T id2_, S s_ = [](T x, int len){ return x; }){
         n = 1;
         height = 0;
         while(n < n_){
             n <<= 1;
             ++height;
         }
+
         f = f_;
         g = g_;
         h = h_;
+        id1 = id1_;
+        id2 = id2_;
         s = s_;
-        en = en_;
-        el = el_;
 
-        node.resize(n << 1);
-        fill(node.begin(), node.end(), en);
-        lazy.resize(n << 1);
-        fill(lazy.begin(), lazy.end(), el);
-        len.resize(n << 1);
-        fill(len.begin() + n, len.begin() + n + n_, 1);
-        fill(len.begin() + n + n_, len.end(), 0);
+        node.assign(n << 1, id1);
+        lazy.assign(n << 1, id2);
+
+        length.assign(n << 1, 1);
+        fill(length.begin() + n + n_, length.end(), 0);
         for(int i = n - 1 ; 0 < i ; --i){
-            len[i] = len[i << 1] + len[(i << 1) | 1];
+            length[i] = length[i << 1] + length[(i << 1) | 1];
         }
 
         return;
     }
 
-    void build(const vector<T>& dat, F f_, G g_, H h_, S s_, T en_, U el_){
+    void build(std::vector<T>& dat, F f_, F g_, F h_, T id1_, T id2_, S s_ = [](T x, int len){ return x; }){
         int n_ = (int)dat.size();
 
-        init(n_, f_, g_, h_, s_, en_, el_);
+        init(n_, f_, g_, h_, id1_, id2_, s_);
 
         for(int i = 0 ; i < n_ ; ++i){
             node[i + n] = dat[i];
         }
-
         for(int i = n - 1 ; 0 < i ; --i){
             node[i] = f(node[i << 1], node[(i << 1) | 1]);
         }
@@ -108,36 +97,39 @@ public:
         return;
     }
 
-    void update(int l, int r, U x){
+    void update(int l, int r, T x){
         l += n;
         r += n - 1;
 
+        int L = l;
+        int R = r;
+
         evaluate(l, r);
 
-        int tl = l;
-        int tr = r;
-
         ++r;
+
         while(l < r){
-            if(l & 1){
-                lazy[l] = h(lazy[l], x);
-                evaluate(l++);
-            }
-            l >>= 1;
             if(r & 1){
-                lazy[--r] = h(lazy[r], x);
-                evaluate(r);
+                --r;
+                lazy[r] = h(lazy[r], x);
             }
             r >>= 1;
+
+            if(l & 1){
+                lazy[l] = h(lazy[l], x);
+                ++l;
+            }
+            l >>= 1;
         }
 
-        while(tl >>= 1, tr >>= 1, tl){
-            if(lazy[tl] == el){
-                update(tl);
-            }
-            if(lazy[tr] == el){
-                update(tr);
-            }
+        while(L >>= 1, R >>= 1, L){
+            evaluate(L << 1);
+            evaluate((L << 1) | 1);
+            node[L] = f(node[L << 1], node[(L << 1) | 1]);
+
+            evaluate(R << 1);
+            evaluate((R << 1) | 1);
+            node[R] = f(node[R << 1], node[(R << 1) | 1]);
         }
 
         return;
@@ -149,19 +141,23 @@ public:
 
         evaluate(l, r);
 
-        T res = en;
         ++r;
+
+        T res = id1;
         while(l < r){
-            if(l & 1){
-                evaluate(l);
-                res = f(res, node[l++]);
-            }
-            l >>= 1;
             if(r & 1){
-                evaluate(--r);
+                --r;
+                evaluate(r);
                 res = f(res, node[r]);
             }
             r >>= 1;
+
+            if(l & 1){
+                evaluate(l);
+                res = f(res, node[l]);
+                ++l;
+            }
+            l >>= 1;
         }
 
         return res;
@@ -170,10 +166,11 @@ public:
 
 /*
 
-verify:https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/DSL_2_F/judge/3842338/C++14
-       https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/DSL_2_G/judge/3842425/C++14
-       https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/DSL_2_H/judge/3842434/C++14
-       https://onlinejudge.u-aizu.ac.jp/status/users/mhrb_minase/submissions/1/DSL_2_I/judge/3842439/C++14
-       https://atcoder.jp/contests/abc128/submissions/7245420
+verify:https://onlinejudge.u-aizu.ac.jp/recent_judges/DSL_2_G/judge/4085400/mhrb_minase/C++14
+       https://onlinejudge.u-aizu.ac.jp/recent_judges/DSL_2_G/judge/4085401/mhrb_minase/C++14
+       https://onlinejudge.u-aizu.ac.jp/recent_judges/DSL_2_H/judge/4085402/mhrb_minase/C++14
+       https://onlinejudge.u-aizu.ac.jp/recent_judges/DSL_2_I/judge/4085403/mhrb_minase/C++14
+       https://atcoder.jp/contests/abc128/submissions/9281982
+       https://atcoder.jp/contests/past201912-open/submissions/9282099
 
 */
