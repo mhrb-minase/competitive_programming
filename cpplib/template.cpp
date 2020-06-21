@@ -14,7 +14,7 @@
 #include<utility>
 #include<vector>
 
-constexpr int IINF = ~(~0 << 30);
+constexpr int IINF = (1 << 30) - 1;
 constexpr long long LLINF = 1LL << 61;
 
 template<typename T>
