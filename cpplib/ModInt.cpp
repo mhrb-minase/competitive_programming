@@ -4,7 +4,7 @@ class ModInt{
 
     constexpr long long mod(long long x) const noexcept {
         x %= modulus;
-        if(x < modulus){
+        if(x < 0){
             x += modulus;
         }
         return x;
@@ -28,6 +28,10 @@ public:
     constexpr long long &value() noexcept { return num; }
 
     constexpr const long long &value() const noexcept { return num; }
+
+    long long get(void){
+        return num;
+    }
 
     constexpr ModInt operator+(const ModInt rhs) const noexcept {
         return ModInt(*this) += rhs;
@@ -115,21 +119,21 @@ public:
         return *this;
     }
 
-    bool &operator<(const ModInt rhs) const noexcept {
+    constexpr bool operator<(const ModInt rhs) noexcept {
         return num < rhs.num;
     }
 
-    bool &operator==(const ModInt rhs) const noexcept {
+    constexpr bool operator==(const ModInt rhs) noexcept {
         return num == rhs.num;
     }
 
-    ModInt &operator=(const ModInt rhs) const noexcept {
+    ModInt &operator=(const ModInt rhs) noexcept {
         num = rhs.num;
         return *this;
     }
 
     template<typename T>
-    ModInt &operator=(const T rhs) const noexcept {
+    ModInt &operator=(const T rhs) noexcept {
         num = mod(rhs);
         return *this;
     }
