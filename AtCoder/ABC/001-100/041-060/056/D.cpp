@@ -1,8 +1,5 @@
 #include<algorithm>
 #include<bitset>
-#include<cassert>
-#include<cfloat>
-#include<climits>
 #include<cmath>
 #include<deque>
 #include<functional>
@@ -12,35 +9,13 @@
 #include<numeric>
 #include<queue>
 #include<set>
-#include<stack>
 #include<string>
 #include<unordered_map>
-#include<unordered_set>
 #include<utility>
 #include<vector>
 
-using namespace std;
-
-using lint = long long;
-using P = pair<int, int>;
-using LLP = pair<long long, long long>;
-
-#define REP(i, x, n) for(int i = (x), i##_len = (int)(n) ; i < i##_len ; ++i)
-#define rep(i, n) for(int i = 0, i##_len = (int)(n) ; i < i##_len ; ++i)
-#define reps(i, n) for(int i = 1, i##_len = (int)(n) ; i <= i##_len ; ++i)
-#define rrep(i, n) for(int i = (int)(n) - 1 ; i >= 0 ; --i)
-#define rreps(i, n) for(int i = (int)(n) ; i > 0 ; --i)
-#define SORT(x) sort((x).begin(), (x).end())
-#define SORT_INV(x) sort((x).rbegin(), (x).rend())
-#define REVERSE(x) reverse((x).begin(), (x).end())
-#define TWINS(x) cout << ((x) ? "Yay!" : ":(") << '\n'
-
 constexpr int IINF = (1 << 30) - 1;
 constexpr long long LLINF = 1LL << 61;
-constexpr double EPS = 1e-10;
-
-constexpr int dx4[] = {1, 0, -1, 0}, dy4[] = {0, 1, 0, -1};
-constexpr int dx8[] = {1, 1, 0, -1, -1, -1, 0, 1}, dy8[] = {0, -1, -1, -1, 0, 1, 1, 1};
 
 template<typename T>
 bool chmax(T& a, T b){
@@ -60,14 +35,54 @@ bool chmin(T& a, T b){
     return false;
 }
 
+long long meguru_search(long long ok, long long ng, std::function<bool(long long)> check){
+    while(1 < std::abs(ok - ng)){
+        long long mid = (ok + ng) >> 1;
+        if(check(mid)){
+            ok = mid;
+        }else{
+            ng = mid;
+        }
+    }
+    return ok;
+}
+
 int main(){
-    cin.tie(nullptr);
-    ios::sync_with_stdio(false);
-    cout << fixed << setprecision(10);
+    int n, k;
+    std::cin >> n >> k;
 
-    
+    std::vector<int> a(n);
+    for(int i = 0 ; i < n ; ++i){
+        std::cin >> a[i];
+    }
 
-    cout << flush;
+    std::sort(a.begin(), a.end());
+
+    auto check = [&](long long mid){
+        std::vector< std::vector<bool> > dp(n + 1, std::vector<bool>(k, false));
+        dp[0][0] = true;
+
+        for(int i = 0 ; i < n ; ++i){
+            for(int j = 0 ; j < k ; ++j){
+                dp[i + 1][j] = dp[i + 1][j] || dp[i][j];
+                if(i != mid && j + a[i] < k){
+                    dp[i + 1][j + a[i]] = dp[i + 1][j + a[i]] || dp[i][j];
+                }
+            }
+        }
+
+        for(int j = std::max(0, k - a[mid]) ; j < k ; ++j){
+            if(dp[n][j]){
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    long long ans = meguru_search(n, -1, check);
+
+    std::cout << ans << std::endl;
 
     return 0;
 }
